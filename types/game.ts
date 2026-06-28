@@ -8,12 +8,31 @@ export type CellType =
   | "obstacle"
   | "rest"
   | "repair"
-  | "goto";
+  | "goto"
+  | "trap"
+  | "quiz";
+
+export type CellEffectType =
+  | CellType
+  | "extra_roll"
+  | "skip_turn"
+  | "mission"
+  | "move"
+  | "quiz";
+
+export interface MoveEffect {
+  type: "move";
+  value: number;
+}
 
 export interface CellEffect {
-  type: CellType;
+  type: CellEffectType;
   value?: number;
-  options?: any;
+  mission?: string;
+  question?: string;
+  options?: string[] | Record<string, unknown>;
+  answer?: number;
+  penalty?: MoveEffect;
 }
 
 export interface Cell {
@@ -22,6 +41,7 @@ export interface Cell {
   type: CellType;
   description: string;
   effect: CellEffect;
+  hostNote?: string;
   icon: string;
   color: string;
 }

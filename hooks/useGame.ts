@@ -1,7 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps -- Legacy hook retained for reference only. */
+
 import { useState, useCallback } from "react";
 import { Team, GameState, CellType } from "@/types/game";
 import { CELLS } from "@/data/cells";
 
+const FINAL_CELL_ID = CELLS[CELLS.length - 1]?.id ?? 21;
+
+const clampPosition = (position: number) => Math.min(Math.max(position, 1), FINAL_CELL_ID);
+
+/**
+ * @deprecated Legacy local-only game state hook. The active app uses
+ * GameContextSocket for Socket.IO-backed synchronization across screens.
+ */
 export const useGame = () => {
   const [gameState, setGameState] = useState<GameState>({
     teams: [],
@@ -57,7 +67,7 @@ export const useGame = () => {
         };
       }
 
-      const newPosition = Math.min(currentTeam.position + steps, 16);
+      const newPosition = clampPosition(currentTeam.position + steps);
       const updatedTeams = prev.teams.map((team, idx) =>
         idx === prev.currentTeamIndex ? { ...team, position: newPosition } : team
       );
@@ -102,7 +112,7 @@ export const useGame = () => {
 
         case "supply_pack":
           const supplySteps = Math.floor(Math.random() * 3) + 1;
-          const newPos = Math.min(currentTeam.position + supplySteps, 16);
+          const newPos = clampPosition(currentTeam.position + supplySteps);
           updatedTeams[prev.currentTeamIndex] = {
             ...currentTeam,
             position: newPos,
@@ -123,8 +133,15 @@ export const useGame = () => {
           break;
 
         case "obstacle":
+          if (cell.effect.type === "mission") {
+            message = cell.effect.mission
+              ? `${cell.description}\n站長指令：${cell.effect.mission}`
+              : cell.description;
+            break;
+          }
+
           const backSteps = cell.effect.value || 2;
-          const obstaclePos = Math.max(currentTeam.position - backSteps, 1);
+          const obstaclePos = clampPosition(currentTeam.position - backSteps);
           updatedTeams[prev.currentTeamIndex] = {
             ...currentTeam,
             position: obstaclePos,
@@ -139,6 +156,28 @@ export const useGame = () => {
           };
           break;
 
+        case "trap":
+          if (cell.effect.type === "skip_turn") {
+            updatedTeams[prev.currentTeamIndex] = {
+              ...currentTeam,
+              isResting: true,
+            };
+            message = `${cell.description}\n下一輪暫停一次。`;
+            break;
+          }
+
+          if (cell.effect.type === "move") {
+            const trapPos = clampPosition(currentTeam.position + (cell.effect.value || 0));
+            updatedTeams[prev.currentTeamIndex] = {
+              ...currentTeam,
+              position: trapPos,
+            };
+            message = `${cell.description}\n移動到第 ${trapPos} 格`;
+            break;
+          }
+
+          break;
+
         case "goto":
           const gotoPos = cell.effect.value || 11;
           updatedTeams[prev.currentTeamIndex] = {
@@ -149,11 +188,28 @@ export const useGame = () => {
           break;
 
         case "station":
-          if (cell.effect.options?.mission === "heart") {
+          if (cell.effect.type === "mission") {
+            message = cell.effect.mission
+              ? `${cell.description}\n站長指令：${cell.effect.mission}`
+              : cell.description;
+          } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "heart") {
             message = "💖 站長指令：做出頭上大愛心動作！📸";
-          } else if (cell.effect.options?.mission === "stomp") {
+          } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "stomp") {
             message = "👟 站長指令：全隊一起腳踏地板！";
           }
+          break;
+
+        case "quiz":
+          message = [
+            cell.description,
+            cell.effect.question ? `題目：${cell.effect.question}` : null,
+            Array.isArray(cell.effect.options)
+              ? cell.effect.options.map((option, index) => `${index + 1}. ${option}`).join("\n")
+              : null,
+            cell.effect.answer ? `正確答案：${cell.effect.answer}` : null,
+          ]
+            .filter(Boolean)
+            .join("\n");
           break;
 
         default:
@@ -184,8 +240,10 @@ export const useGame = () => {
       }
 
       let nextTeamIndex = (prev.currentTeamIndex + 1) % prev.teams.length;
+      const shouldClearCurrentRest =
+        prev.eventType === "rest" && prev.eventMessage.includes("正在休息中");
       const updatedTeams = prev.teams.map((team, idx) =>
-        idx === prev.currentTeamIndex && team.isResting
+        shouldClearCurrentRest && idx === prev.currentTeamIndex && team.isResting
           ? { ...team, isResting: false }
           : team
       );

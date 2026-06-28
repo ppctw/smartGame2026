@@ -18,6 +18,10 @@ const getEventIcon = (type: CellType | null): string => {
       return "❓";
     case "obstacle":
       return "⚠️";
+    case "trap":
+      return "🚧";
+    case "quiz":
+      return "❓";
     case "rest":
       return "🔧";
     case "station":
@@ -41,6 +45,10 @@ const getEventColor = (type: CellType | null): string => {
       return "bg-pink-400";
     case "obstacle":
       return "bg-red-400";
+    case "trap":
+      return "bg-red-400";
+    case "quiz":
+      return "bg-purple-400";
     case "rest":
       return "bg-orange-400";
     case "station":

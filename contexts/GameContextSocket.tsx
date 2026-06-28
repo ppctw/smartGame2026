@@ -37,6 +37,32 @@ const initialState: GameState = {
   gameStarted: false,
 };
 
+const FINAL_CELL_ID = CELLS[CELLS.length - 1]?.id ?? 21;
+
+const clampPosition = (position: number) => Math.min(Math.max(position, 1), FINAL_CELL_ID);
+
+const formatMissionMessage = (description: string, mission?: string, hostNote?: string) =>
+  [description, mission ? `站長指令：${mission}` : null, hostNote ? `主持提示：${hostNote}` : null]
+    .filter(Boolean)
+    .join("\n");
+
+const formatQuizMessage = (cell: (typeof CELLS)[number]) => {
+  const { effect } = cell;
+  const options = Array.isArray(effect.options)
+    ? effect.options.map((option, index) => `${index + 1}. ${option}`).join("\n")
+    : "";
+
+  return [
+    cell.description,
+    effect.question ? `題目：${effect.question}` : null,
+    options,
+    effect.answer ? `正確答案：${effect.answer}` : null,
+    effect.penalty ? `答錯懲罰：後退 ${Math.abs(effect.penalty.value)} 格` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
+
 let socket: Socket | null = null;
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -159,7 +185,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       case "supply_pack":
         const supplySteps = Math.floor(Math.random() * 3) + 1;
-        const supplyNewPos = Math.min(currentTeam.position + supplySteps, 16);
+        const supplyNewPos = clampPosition(currentTeam.position + supplySteps);
         message = `${cell.description}\n獲得 ${supplySteps} 格！前進到第 ${supplyNewPos} 格`;
         
         updateGame({
@@ -172,6 +198,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setTimeout(() => {
           animateMovement(currentState, supplyNewPos, () => {
             updateGame({ showEvent: false, eventMessage: "", eventType: null });
+
+            const movedTeams = currentState.teams.map((team, idx) =>
+              idx === currentState.currentTeamIndex
+                ? { ...team, position: supplyNewPos }
+                : team
+            );
+            const newState = { ...currentState, teams: movedTeams };
+
+            setTimeout(() => {
+              handleCellEffect(newState);
+            }, 300);
           });
         }, 2000);
         return;
@@ -198,8 +235,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
 
       case "obstacle":
+        if (cell.effect.type === "mission") {
+          message = formatMissionMessage(cell.description, cell.effect.mission, cell.hostNote);
+          break;
+        }
+
         const backSteps = cell.effect.value || 2;
-        const obstaclePos = Math.max(currentTeam.position - backSteps, 1);
+        const obstaclePos = clampPosition(currentTeam.position - backSteps);
         message = `${cell.description}\n退回到第 ${obstaclePos} 格`;
         
         updateGame({
@@ -223,6 +265,37 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
         break;
 
+      case "trap":
+        if (cell.effect.type === "skip_turn") {
+          updatedTeams[currentState.currentTeamIndex] = {
+            ...currentTeam,
+            isResting: true,
+          };
+          message = `${cell.description}\n下一輪暫停一次。`;
+          break;
+        }
+
+        if (cell.effect.type === "move") {
+          const trapPos = clampPosition(currentTeam.position + (cell.effect.value || 0));
+          message = `${cell.description}\n移動到第 ${trapPos} 格`;
+
+          updateGame({
+            showEvent: true,
+            eventMessage: message,
+            eventType: cell.type,
+            isRolling: false,
+          });
+
+          setTimeout(() => {
+            animateMovement(currentState, trapPos, () => {
+              updateGame({ showEvent: false, eventMessage: "", eventType: null });
+            });
+          }, 2000);
+          return;
+        }
+
+        break;
+
       case "goto":
         const gotoPos = cell.effect.value || 11;
         message = `${cell.description}`;
@@ -242,11 +315,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
 
       case "station":
-        if (cell.effect.options?.mission === "heart") {
+        if (cell.effect.type === "mission") {
+          message = formatMissionMessage(cell.description, cell.effect.mission, cell.hostNote);
+        } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "heart") {
           message = "💖 站長指令：做出頭上大愛心動作！📸";
-        } else if (cell.effect.options?.mission === "stomp") {
+        } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "stomp") {
           message = "👟 站長指令：全隊一起腳踏地板！";
         }
+        break;
+
+      case "quiz":
+        message = formatQuizMessage(cell);
         break;
 
       default:
@@ -300,7 +379,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
-    const targetPosition = Math.min(currentTeam.position + steps, 16);
+    const targetPosition = clampPosition(currentTeam.position + steps);
     let currentPosition = currentTeam.position;
     
     const moveOneStep = () => {
@@ -380,8 +459,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     let nextTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
+    const shouldClearCurrentRest =
+      gameState.eventType === "rest" && gameState.eventMessage.includes("正在休息中");
     const updatedTeams = gameState.teams.map((team, idx) =>
-      idx === gameState.currentTeamIndex && team.isResting
+      shouldClearCurrentRest && idx === gameState.currentTeamIndex && team.isResting
         ? { ...team, isResting: false }
         : team
     );
