@@ -12,6 +12,8 @@ type GridPlacement = React.CSSProperties & {
   gridRow: number | string;
 };
 
+const splitCellName = (name: string) => name.replace(/\\n/g, "\n").split(/\r?\n/).filter(Boolean);
+
 const createBoardLayout = (cells: Cell[]) => {
   const regularCellCount = Math.max(cells.length - 2, 0);
   const candidates = Array.from({ length: 5 }, (_, index) => index + 7).flatMap((columns) =>
@@ -110,6 +112,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ teams, currentTeamIndex })
     const teamsHere = getTeamsAtCell(cell.id);
     const isCurrentTeamHere = teamsHere.some((t) => t.id === teams[currentTeamIndex]?.id);
     const isSpecialEndpoint = cell.id === 1 || cell.type === "end";
+    const cellNameLines = splitCellName(cell.name);
 
     return (
       <div
@@ -125,6 +128,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ teams, currentTeamIndex })
         `}
         style={{
           ...boardLayout.getPlacement(cell.id),
+          containerType: "size",
           boxShadow: isCurrentTeamHere 
             ? '0 0 20px rgba(34, 211, 238, 0.6), inset 0 0 20px rgba(34, 211, 238, 0.1)' 
             : '0 0 10px rgba(34, 211, 238, 0.3), inset 0 0 10px rgba(34, 211, 238, 0.05)'
@@ -132,61 +136,51 @@ export const GameBoard: React.FC<GameBoardProps> = ({ teams, currentTeamIndex })
       >
         <div
           className="absolute right-1.5 top-1.5 z-30 rounded-md border border-cyan-200/70 bg-slate-950/75 px-1.5 py-0.5 font-bold leading-none text-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.35)]"
-          style={{ fontSize: isSpecialEndpoint ? 'clamp(0.8rem, 1vw, 1.15rem)' : 'clamp(0.65rem, 0.8vw, 0.95rem)' }}
+          style={{ fontSize: isSpecialEndpoint ? 'clamp(0.8rem, 8cqw, 1.15rem)' : 'clamp(0.65rem, 7cqw, 0.95rem)' }}
         >
           {cell.id}
         </div>
-        <div className="text-center relative z-10 flex flex-col items-center justify-center h-full p-2 min-h-0 overflow-hidden">
+        <div
+          className={`text-center relative z-10 flex flex-col items-center justify-center h-full p-2 min-h-0 overflow-hidden ${
+            teamsHere.length > 0 ? "pb-9" : ""
+          }`}
+        >
           <div
             className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] leading-none"
-            style={{ fontSize: isSpecialEndpoint ? 'clamp(2rem, 3vw, 4.25rem)' : 'clamp(1.45rem, 2.2vw, 3.2rem)' }}
+            style={{ fontSize: isSpecialEndpoint ? 'clamp(2rem, 34cqw, 4.25rem)' : 'clamp(1.45rem, 25cqw, 3.2rem)' }}
           >
             {cell.icon}
           </div>
           <div
-            className="mt-1 font-semibold text-white drop-shadow-lg w-full text-center truncate leading-tight px-1"
-            style={{ fontSize: isSpecialEndpoint ? 'clamp(0.8rem, 1.1vw, 1.35rem)' : 'clamp(0.65rem, 0.9vw, 1.15rem)' }}
+            className="mt-1 font-semibold text-white drop-shadow-lg w-full text-center leading-tight px-1"
+            style={{ fontSize: isSpecialEndpoint ? 'clamp(0.8rem, 10cqw, 1.35rem)' : 'clamp(0.65rem, 8.5cqw, 1.15rem)' }}
+            title={cell.name}
           >
-            {cell.name}
+            {cellNameLines.map((line, index) => (
+              <span key={`${cell.id}-${index}`} className="block truncate">
+                {line}
+              </span>
+            ))}
           </div>
         </div>
 
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-lg pointer-events-none" />
 
         {teamsHere.length > 0 && (
-          <div className="absolute inset-0 flex items-center justify-between px-1 z-20 pointer-events-none">
-            <div className="flex flex-col gap-1">
-              {teamsHere.slice(0, Math.ceil(teamsHere.length / 2)).map((team) => (
-                <div
-                  key={team.id}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-lg border-2 border-white ${team.justArrived ? 'piece-arrived' : ''}`}
-                  style={{ 
-                    backgroundColor: team.color,
-                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.9)'
-                  }}
-                  title={team.name}
-                >
-                  {team.emoji}
-                </div>
-              ))}
-            </div>
-            {teamsHere.length > 1 && (
-              <div className="flex flex-col gap-1">
-                {teamsHere.slice(Math.ceil(teamsHere.length / 2)).map((team) => (
-                  <div
-                    key={team.id}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-lg border-2 border-white ${team.justArrived ? 'piece-arrived' : ''}`}
-                    style={{ 
-                      backgroundColor: team.color,
-                      boxShadow: '0 0 20px rgba(255, 255, 255, 0.9)'
-                    }}
-                    title={team.name}
-                  >
-                    {team.emoji}
-                  </div>
-                ))}
+          <div className="absolute bottom-1.5 left-1.5 right-1.5 z-20 flex items-center justify-center gap-1 pointer-events-none">
+            {teamsHere.map((team) => (
+              <div
+                key={team.id}
+                className={`h-8 w-8 rounded-full flex items-center justify-center text-xl shadow-lg border-2 border-white ${team.justArrived ? 'piece-arrived' : ''}`}
+                style={{
+                  backgroundColor: team.color,
+                  boxShadow: '0 0 16px rgba(255, 255, 255, 0.9)'
+                }}
+                title={team.name}
+              >
+                {team.emoji}
               </div>
-            )}
+            ))}
           </div>
         )}
       </div>

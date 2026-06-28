@@ -3,7 +3,7 @@ import { Cell } from "@/types/game";
 export const CELLS: Cell[] = [
   {
     id: 1,
-    name: "思麥特車站",
+    name: "思麥特\n車站",
     type: "start",
     description: "出發！",
     effect: { type: "start" },
@@ -12,7 +12,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 2,
-    name: "燃料加滿加速前進",
+    name: "燃料加滿\n加速前進",
     type: "boost",
     description: "多擲骰子一次。",
     effect: { type: "extra_roll" },
@@ -30,7 +30,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 4,
-    name: "艾特迪車站",
+    name: "艾特迪\n車站",
     type: "station",
     description: "後退：補給站。完成站長指令：傳送球池球（補給物品）到最前面",
     effect: { type: "mission", mission: "傳送球池球（補給物品）到最前面" },
@@ -54,7 +54,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 6,
-    name: "美克斯車站",
+    name: "美克斯\n車站",
     type: "station",
     description: "完成站長指令：原地跑步10秒",
     effect: { type: "mission", mission: "原地跑步10秒" },
@@ -64,7 +64,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 7,
-    name: "燃料加滿加速前進",
+    name: "燃料加滿\n加速前進",
     type: "boost",
     description: "多擲骰子一次。",
     effect: { type: "extra_roll" },
@@ -73,7 +73,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 8,
-    name: "軌道落石擋路",
+    name: "軌道落石\n擋路",
     type: "obstacle",
     description: "遇到障礙物阻擋，全隊一起清除石頭（往後傳）。",
     effect: { type: "mission", mission: "全隊一起清除石頭（往後傳）" },
@@ -91,7 +91,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 10,
-    name: "史貝瑞特車站",
+    name: "史貝瑞特\n車站",
     type: "station",
     description: "完成站長指令：做出指定動作（頭上大愛心）",
     effect: { type: "mission", mission: "投影片出現相機畫面，做出指定動作（頭上大愛心）" },
@@ -101,7 +101,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 11,
-    name: "艾德明斯車站",
+    name: "艾德明斯\n車站",
     type: "station",
     description: "完成站長指令：全隊一起蹲下再站起來五次",
     effect: { type: "mission", mission: "全隊一起蹲下再站起來五次" },
@@ -111,7 +111,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 12,
-    name: "平交道故障",
+    name: "平交道\n故障",
     type: "trap",
     description: "列車暫停一次。",
     effect: { type: "skip_turn" },
@@ -120,7 +120,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 13,
-    name: "遭遇狂風大雨",
+    name: "遭遇\n狂風大雨",
     type: "trap",
     description: "退後２格。",
     effect: { type: "move", value: -2 },
@@ -129,7 +129,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 14,
-    name: "雷瑟邦伯車站",
+    name: "雷瑟邦伯\n車站",
     type: "station",
     description: "後退：維修站。完成站長指令：拿出工具道具往前傳，進行模擬維修",
     effect: { type: "mission", mission: "拿出工具道具往前傳，進行模擬維修" },
@@ -148,7 +148,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 16,
-    name: "提姆比爾德斯站",
+    name: "提姆比爾\n德斯站",
     type: "station",
     description: "完成站長指令：台上做什麼動作，要馬上跟上，連續4個動作（機器人、稻草人、蜘蛛人、超人）",
     effect: { type: "mission", mission: "台上做什麼動作，要馬上跟上，連續4個動作（機器人、稻草人、蜘蛛人、超人）" },
@@ -192,7 +192,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 20,
-    name: "瑞弗蒙斯車站",
+    name: "瑞弗蒙斯\n車站",
     type: "station",
     description: "完成站長指令：單腳站立10秒鐘",
     effect: { type: "mission", mission: "單腳站立10秒鐘" },
@@ -202,7 +202,7 @@ export const CELLS: Cell[] = [
   },
   {
     id: 21,
-    name: "遭遇狂風大雨",
+    name: "遭遇\n狂風大雨",
     type: "trap",
     description: "退後２格。",
     effect: { type: "move", value: -2 },
