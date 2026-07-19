@@ -113,7 +113,7 @@ export default function GamePage() {
         onClose={closeEvent}
       />
 
-      <WinScreen winner={gameState.winner} onPlayAgain={resetGame} />
+      <WinScreen winner={gameState.winner} />
     </div>
   );
 }

@@ -134,9 +134,7 @@ export const useGame = () => {
 
         case "obstacle":
           if (cell.effect.type === "mission") {
-            message = cell.effect.mission
-              ? `${cell.description}\n站長指令：${cell.effect.mission}`
-              : cell.description;
+            message = cell.description;
             break;
           }
 
@@ -189,13 +187,11 @@ export const useGame = () => {
 
         case "station":
           if (cell.effect.type === "mission") {
-            message = cell.effect.mission
-              ? `${cell.description}\n站長指令：${cell.effect.mission}`
-              : cell.description;
+            message = cell.description;
           } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "heart") {
-            message = "💖 站長指令：做出頭上大愛心動作！📸";
+            message = "💖 做出頭上大愛心動作！📸";
           } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "stomp") {
-            message = "👟 站長指令：全隊一起腳踏地板！";
+            message = "👟 全隊一起腳踏地板！";
           }
           break;
 
@@ -206,7 +202,6 @@ export const useGame = () => {
             Array.isArray(cell.effect.options)
               ? cell.effect.options.map((option, index) => `${index + 1}. ${option}`).join("\n")
               : null,
-            cell.effect.answer ? `正確答案：${cell.effect.answer}` : null,
           ]
             .filter(Boolean)
             .join("\n");

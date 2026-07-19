@@ -178,7 +178,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({ teams, currentTeamIndex })
                 }}
                 title={team.name}
               >
-                {team.emoji}
+                {team.image ? (
+                  <span
+                    className="h-full w-full rounded-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${team.image})` }}
+                  />
+                ) : (
+                  team.emoji
+                )}
               </div>
             ))}
           </div>
@@ -211,20 +218,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({ teams, currentTeamIndex })
             style={{
               gridColumn: `2 / span ${boardLayout.columnCount - 2}`,
               gridRow: `2 / span ${boardLayout.rowCount - 2}`,
-              background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(59, 130, 246, 0.15) 100%)',
+              backgroundImage: "url('/backgrounds/game-background.png')",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
               boxShadow: '0 0 40px rgba(34, 211, 238, 0.3), inset 0 0 40px rgba(34, 211, 238, 0.1)'
             }}
-          >
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDM0LCAyMTEsIDIzOCwgMC4xKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30" />
-            <div className="relative z-10 text-center">
-              <div className="text-7xl mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">🚂</div>
-              <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 mb-2 drop-shadow-lg">
-                夢想探索號
-              </h2>
-              <div className="text-2xl font-bold text-cyan-400 mb-1">2026</div>
-              <p className="text-lg text-cyan-200">前往夢夢車站</p>
-            </div>
-          </div>
+          />
         </div>
       </div>
     </div>

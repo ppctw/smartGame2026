@@ -3,10 +3,9 @@ import { Team } from "@/types/game";
 
 interface WinScreenProps {
   winner: Team | null;
-  onPlayAgain: () => void;
 }
 
-export const WinScreen: React.FC<WinScreenProps> = ({ winner, onPlayAgain }) => {
+export const WinScreen: React.FC<WinScreenProps> = ({ winner }) => {
   if (!winner) return null;
 
   return (
@@ -38,7 +37,16 @@ export const WinScreen: React.FC<WinScreenProps> = ({ winner, onPlayAgain }) => 
           className="inline-flex items-center gap-4 px-8 py-6 rounded-2xl mb-8"
           style={{ backgroundColor: winner.color }}
         >
-          <div className="text-6xl">{winner.emoji}</div>
+          <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-white text-6xl">
+            {winner.image ? (
+              <span
+                className="block h-full w-full bg-cover bg-center"
+                style={{ backgroundImage: `url(${winner.image})` }}
+              />
+            ) : (
+              winner.emoji
+            )}
+          </div>
           <div className="text-5xl font-bold text-white">{winner.name}</div>
         </div>
 
@@ -46,17 +54,6 @@ export const WinScreen: React.FC<WinScreenProps> = ({ winner, onPlayAgain }) => 
           成功抵達夢夢車站！🎉
         </div>
 
-        <button
-          onClick={onPlayAgain}
-          className="
-            px-12 py-6 bg-gradient-to-r from-train-blue to-train-orange
-            text-white rounded-2xl font-bold text-3xl
-            hover:scale-105 transition-all duration-200
-            shadow-2xl
-          "
-        >
-          再玩一次
-        </button>
       </div>
     </div>
   );

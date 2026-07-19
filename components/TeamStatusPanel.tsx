@@ -51,7 +51,14 @@ export const TeamStatusPanel: React.FC<TeamStatusPanelProps> = ({
                     boxShadow: '0 0 10px rgba(255, 255, 255, 0.5)'
                   }}
                 >
-                  {team.emoji}
+                  {team.image ? (
+                    <span
+                      className="h-full w-full rounded-full bg-cover bg-center"
+                      style={{ backgroundImage: `url(${team.image})` }}
+                    />
+                  ) : (
+                    team.emoji
+                  )}
                 </div>
                 <div>
                   <div className="font-bold text-lg text-white">{team.name}</div>

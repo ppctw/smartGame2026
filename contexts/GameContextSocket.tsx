@@ -41,10 +41,7 @@ const FINAL_CELL_ID = CELLS[CELLS.length - 1]?.id ?? 21;
 
 const clampPosition = (position: number) => Math.min(Math.max(position, 1), FINAL_CELL_ID);
 
-const formatMissionMessage = (description: string, mission?: string, hostNote?: string) =>
-  [description, mission ? `站長指令：${mission}` : null, hostNote ? `主持提示：${hostNote}` : null]
-    .filter(Boolean)
-    .join("\n");
+const formatMissionMessage = (description: string) => description;
 
 const formatQuizMessage = (cell: (typeof CELLS)[number]) => {
   const { effect } = cell;
@@ -56,8 +53,6 @@ const formatQuizMessage = (cell: (typeof CELLS)[number]) => {
     cell.description,
     effect.question ? `題目：${effect.question}` : null,
     options,
-    effect.answer ? `正確答案：${effect.answer}` : null,
-    effect.penalty ? `答錯懲罰：後退 ${Math.abs(effect.penalty.value)} 格` : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -236,7 +231,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       case "obstacle":
         if (cell.effect.type === "mission") {
-          message = formatMissionMessage(cell.description, cell.effect.mission, cell.hostNote);
+          message = formatMissionMessage(cell.description);
           break;
         }
 
@@ -316,11 +311,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       case "station":
         if (cell.effect.type === "mission") {
-          message = formatMissionMessage(cell.description, cell.effect.mission, cell.hostNote);
+          message = formatMissionMessage(cell.description);
         } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "heart") {
-          message = "💖 站長指令：做出頭上大愛心動作！📸";
+          message = "💖 做出頭上大愛心動作！📸";
         } else if (!Array.isArray(cell.effect.options) && cell.effect.options?.mission === "stomp") {
-          message = "👟 站長指令：全隊一起腳踏地板！";
+          message = "👟 全隊一起腳踏地板！";
         }
         break;
 

@@ -49,7 +49,7 @@ export default function Home() {
         onClose={closeEvent}
       />
 
-      <WinScreen winner={gameState.winner} onPlayAgain={resetGame} />
+      <WinScreen winner={gameState.winner} />
     </div>
   );
 }

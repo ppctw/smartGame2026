@@ -41,8 +41,15 @@ export const ControlPanel: React.FC = () => {
               boxShadow: '0 0 20px rgba(34, 211, 238, 0.5)'
             }}
           >
-            <div className="text-5xl mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-              {currentTeam.emoji}
+            <div className="mx-auto mb-2 h-20 w-20 overflow-hidden rounded-full border-2 border-white text-5xl drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+              {currentTeam.image ? (
+                <span
+                  className="block h-full w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${currentTeam.image})` }}
+                />
+              ) : (
+                currentTeam.emoji
+              )}
             </div>
             <div className="text-3xl font-bold text-white drop-shadow-lg">
               {currentTeam.name}

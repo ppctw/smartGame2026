@@ -53,6 +53,7 @@ export interface Team {
   position: number;
   isResting: boolean;
   emoji: string;
+  image?: string;
   justArrived?: boolean;
 }
 

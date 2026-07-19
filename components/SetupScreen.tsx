@@ -6,27 +6,15 @@ interface SetupScreenProps {
 }
 
 const TEAM_COLORS = [
-  "#ef4444", // red
-  "#3b82f6", // blue
-  "#10b981", // green
-  "#f59e0b", // amber
-  "#8b5cf6", // violet
-  "#ec4899", // pink
+  "#3b82f6",
+  "#f59e0b",
 ];
 
-const TEAM_EMOJIS = ["🚂", "🚃", "🚄", "🚅", "🚆", "🚇"];
+const TEAM_EMOJIS = ["🐺", "🐆"];
+const TEAM_IMAGES = ["/teams/snow-wolf.jpg", "/teams/cheetah.jpg"];
 
 export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
-  const [teamCount, setTeamCount] = useState(2);
-  const [teamNames, setTeamNames] = useState<string[]>(["隊伍 1", "隊伍 2"]);
-
-  const handleTeamCountChange = (count: number) => {
-    setTeamCount(count);
-    const newNames = Array.from({ length: count }, (_, i) =>
-      teamNames[i] || `隊伍 ${i + 1}`
-    );
-    setTeamNames(newNames);
-  };
+  const [teamNames, setTeamNames] = useState<string[]>(["雪狼隊", "獵豹隊"]);
 
   const handleNameChange = (index: number, name: string) => {
     const newNames = [...teamNames];
@@ -42,6 +30,7 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
       position: 1,
       isResting: false,
       emoji: TEAM_EMOJIS[index],
+      image: TEAM_IMAGES[index],
     }));
     onStart(teams);
   };
@@ -70,45 +59,9 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
               filter: 'drop-shadow(0 0 20px rgba(34, 211, 238, 0.8))'
             }}
           >
-            🚂 夢想探索號列車
+            🚂 夢想探索號極速列車
           </h1>
           <p className="text-2xl text-cyan-200">準備開始你的冒險旅程！</p>
-        </div>
-
-        <div className="mb-8">
-          <label className="block text-2xl font-bold mb-4 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]">
-            選擇隊伍數量（2～6 隊）
-          </label>
-          <div className="flex gap-4 justify-center">
-            {[2, 3, 4, 5, 6].map((count) => (
-              <button
-                key={count}
-                onClick={() => handleTeamCountChange(count)}
-                className={`
-                  w-16 h-16 rounded-xl font-bold text-2xl border-2
-                  transition-all duration-200
-                  ${
-                    teamCount === count
-                      ? "border-cyan-400 text-white scale-110"
-                      : "border-cyan-600/50 text-cyan-400 hover:border-cyan-400"
-                  }
-                `}
-                style={
-                  teamCount === count
-                    ? {
-                        background: 'linear-gradient(135deg, #0c4a6e 0%, #075985 100%)',
-                        boxShadow: '0 0 20px rgba(34, 211, 238, 0.6)'
-                      }
-                    : {
-                        background: 'linear-gradient(135deg, #0a1929 0%, #0d1b2a 100%)',
-                        boxShadow: '0 0 10px rgba(34, 211, 238, 0.2)'
-                      }
-                }
-              >
-                {count}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="mb-12">
@@ -125,7 +78,10 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
                     boxShadow: '0 0 15px rgba(255, 255, 255, 0.5)'
                   }}
                 >
-                  {TEAM_EMOJIS[index]}
+                  <span
+                    className="h-full w-full rounded-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${TEAM_IMAGES[index]})` }}
+                  />
                 </div>
                 <input
                   type="text"
